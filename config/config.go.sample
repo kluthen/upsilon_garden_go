@@ -1,0 +1,11 @@
+// Copy this file to config/config.go
+// Set appropriate values for consts.
+package config
+
+const (
+    DB_USER     = "user"
+    DB_PASSWORD = "password"
+    DB_NAME     = "name"
+    DB_HOST     = "host"
+    DB_SEED     = "config/db/schema.sql"
+)
