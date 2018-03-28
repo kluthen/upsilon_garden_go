@@ -6,7 +6,6 @@ import (
 
 func main() {
 	handler := db.New()
-	handler.Drop()
 	defer handler.Close()
 
 }

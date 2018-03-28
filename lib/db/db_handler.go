@@ -3,9 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"strings"
 
 	"upsilon_garden_go/config"
 
@@ -23,36 +21,12 @@ func New() *Handler {
 	handler := new(Handler)
 	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s",
 		config.DB_USER, config.DB_PASSWORD, config.DB_NAME, config.DB_HOST)
-	db, err := sql.Open("postgres", dbinfo)
 
-	if err, ok := err.(*pq.Error); ok {
-		log.Printf("DB: Database failed to be connected: %s", err)
-		dbinfo := fmt.Sprintf("user=%s password=%s sslmode=disable host=%s",
-			config.DB_USER, config.DB_PASSWORD, config.DB_HOST)
-		db, err := sql.Open("postgres", dbinfo)
-		if err, ok := err.(*pq.Error); ok {
-			log.Fatalf("DB: Can't initiate database creation, aborting : %s", err)
-		} else {
-			handler.db = db
-			log.Print("DB: Creating Database !")
+	db, _ := sql.Open("postgres", dbinfo)
 
-			handler.Exec("CREATE DATABSE %s", config.DB_NAME)
-
-			log.Print("DB: Seeding Database !")
-			data, err := ioutil.ReadFile(config.DB_SEED)
-
-			if err != nil {
-				log.Fatalf("DB: Failed to read seed file at %s : %s", config.DB_SEED, err)
-			}
-
-			// crude way of doing it ... can't have ';' anywhere else than end of query.
-			requests := strings.Split(string(data), ";")
-
-			for _, request := range requests {
-				handler.db.Exec(request)
-			}
-
-		}
+	errPing := db.Ping()
+	if err, ok := errPing.(*pq.Error); ok {
+		log.Fatalf("DB: Database failed to be connected: %s", err)
 	} else {
 		log.Printf("DB: Successfully connected to : %s %s", config.DB_HOST, config.DB_NAME)
 	}
@@ -99,13 +73,6 @@ func (dbh *Handler) Close() {
 	} else {
 		log.Print("DB: Already Closed")
 	}
-}
-
-// Drop database and close connection
-func (dbh *Handler) Drop() {
-	query := fmt.Sprintf("DROP DATABASE %s IF EXISTS", config.DB_NAME)
-	dbh.Exec(query)
-	defer dbh.Close()
 }
 
 // ErrorCheck checks if query result has an error or not
