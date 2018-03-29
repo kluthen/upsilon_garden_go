@@ -7,5 +7,5 @@ const (
     DB_PASSWORD = "password"
     DB_NAME     = "name"
     DB_HOST     = "host"
-    DB_SEED     = "config/db/schema.sql"
+    STATIC_FILES= "web/static/"
 )

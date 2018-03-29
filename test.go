@@ -8,8 +8,8 @@ import (
 	"upsilon_garden_go/lib/gardens"
 )
 
-func main() {
-	handler := db.New()
+func testDB(handler *db.Handler) {
+
 	gard := garden.New()
 	gard.Name = "Kluthen's"
 	gard.Repsert(handler)
@@ -63,7 +63,11 @@ func main() {
 			log.Fatalf("Test: Found Garden that should have been dropped %d", row.ID)
 		}
 	}
+}
 
+func main() {
+	handler := db.New()
+	testDB(handler)
 	defer handler.Close()
 
 }
