@@ -1,23 +1,29 @@
 package gardens
 
 import (
-	"errors"
-	"log"
+	"fmt"
 	"upsilon_garden_go/lib/db"
 	"upsilon_garden_go/lib/garden"
 )
 
 // GardenDescriptor Allow quick access to Garden without whole structure loading.
 type GardenDescriptor struct {
-	id   int
-	name string
+	ID   int
+	Name string
+}
+
+// String pretty displayer
+func (gd *GardenDescriptor) String() string {
+	return fmt.Sprintf("GardenDescriptor { "+
+		"ID: %d"+
+		", name: %s }", gd.ID, gd.Name)
 }
 
 // All fetches all garden from DB.
 func All(dbh *db.Handler) []*garden.Garden {
 	var res []*garden.Garden
 
-	rows := dbh.Exec("SELECT * FROM garden")
+	rows := dbh.Exec("SELECT garden_id, name, last_update, next_update, parcels, plants FROM garden")
 	for rows.Next() {
 		res = append(res, garden.Create(rows))
 	}
@@ -29,7 +35,7 @@ func All(dbh *db.Handler) []*garden.Garden {
 func AllIds(dbh *db.Handler) []GardenDescriptor {
 	var res []GardenDescriptor
 
-	rows := dbh.Exec("SELECT id,name FROM garden")
+	rows := dbh.Exec("SELECT garden_id,name FROM garden")
 	for rows.Next() {
 		var id int
 		var name string
@@ -38,21 +44,4 @@ func AllIds(dbh *db.Handler) []GardenDescriptor {
 	}
 	defer rows.Close()
 	return res
-}
-
-// ByID Fetch garden with provided id.
-func ByID(dbh *db.Handler, id int) (*garden.Garden, error) {
-	var res *garden.Garden
-
-	rows := dbh.Exec("SELECT * FROM garden WHERE garden_id='?'", id)
-	if rows.Next() {
-		res = garden.Create(rows)
-	} else {
-		log.Printf("Gardens: No matching garden found: %d", id)
-		return nil, errors.New("Gardens: No match found")
-	}
-
-	defer rows.Close()
-
-	return res, nil
 }

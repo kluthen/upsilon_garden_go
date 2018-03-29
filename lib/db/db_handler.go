@@ -38,9 +38,9 @@ func New() *Handler {
 
 // Exec executes provided query and check if it's correctly executed or not.
 // Abort app if not.
-func (dbh *Handler) Exec(format string, a ...interface{}) (result *sql.Rows) {
+func (dbh *Handler) Exec(query string) (result *sql.Rows) {
 	dbh.CheckState()
-	query := fmt.Sprintf(format, a)
+	log.Printf("DB: About to Exec: %s", query)
 	result, err := dbh.db.Query(query)
 	errorCheck(query, err)
 	return result
@@ -49,7 +49,8 @@ func (dbh *Handler) Exec(format string, a ...interface{}) (result *sql.Rows) {
 // Query Just like Exec but uses Postgres formater.
 func (dbh *Handler) Query(format string, a ...interface{}) (result *sql.Rows) {
 	dbh.CheckState()
-	result, err := dbh.db.Query(format, a)
+	log.Printf("DB: About to Query: %s", format)
+	result, err := dbh.db.Query(format, a...)
 	errorCheck(format, err)
 	return result
 }
