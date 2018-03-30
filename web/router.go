@@ -62,9 +62,10 @@ func RouterSetup() *mux.Router {
 	APIPlantRouter.HandleFunc("/{pid}", plant_controller.Delete).Methods("DELETE")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(config.STATIC_FILES))))
+
+	r.Use(logResultMw)
 	r.Use(loggingMw)
 	r.Use(gardenMw)
-	r.Use(logResultMw)
 	return r
 }
 
