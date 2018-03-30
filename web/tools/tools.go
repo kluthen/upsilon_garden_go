@@ -30,7 +30,23 @@ func GetInt(req *http.Request, key string) (int, error) {
 // GenerateAPIError generate a simple JSON reply with error message provided.
 func GenerateAPIError(w http.ResponseWriter, message string) {
 	var repm = make(map[string]string)
+	repm["status"] = "error"
 	repm["error"] = message
 	json.NewEncoder(w).Encode(repm)
 	w.WriteHeader(400)
+}
+
+// GenerateAPIOkAndSend generate a simple JSON reply with status: ok.
+func GenerateAPIOkAndSend(w http.ResponseWriter) {
+	var repm = make(map[string]string)
+	repm["status"] = "ok"
+	json.NewEncoder(w).Encode(repm)
+	w.WriteHeader(200)
+}
+
+// GenerateAPIOk generate a simple JSON reply with status: ok.
+func GenerateAPIOk() map[string]string {
+	var repm = make(map[string]string)
+	repm["status"] = "ok"
+	return repm
 }

@@ -6,6 +6,7 @@ import (
 	"upsilon_garden_go/lib/db"
 	"upsilon_garden_go/lib/garden"
 	"upsilon_garden_go/lib/gardens"
+	"upsilon_garden_go/web"
 )
 
 func testDB(handler *db.Handler) {
@@ -67,7 +68,10 @@ func testDB(handler *db.Handler) {
 
 func main() {
 	handler := db.New()
-	testDB(handler)
+	// testDB(handler)
+	r := web.RouterSetup()
+	web.ListenAndServe(r)
+
 	defer handler.Close()
 
 }

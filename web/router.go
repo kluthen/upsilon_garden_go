@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 	"upsilon_garden_go/config"
 	"upsilon_garden_go/web/garden_controller"
@@ -56,10 +57,19 @@ func RouterSetup() *mux.Router {
 	APIPlantRouter.HandleFunc("/{pid}", plant_controller.Delete).Methods("DELETE")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(config.STATIC_FILES))))
+	r.Use(loggingMw)
 	return r
+}
+
+func loggingMw(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Web: Received request: %s %s", r.Method, r.URL)
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ListenAndServe start listing http server
 func ListenAndServe(router *mux.Router) {
+	log.Printf("Web: Started server on 127.0.0.1:80 and listening ... ")
 	http.ListenAndServe(":80", router)
 }

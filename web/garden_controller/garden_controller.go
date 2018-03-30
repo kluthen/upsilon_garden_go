@@ -17,70 +17,145 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	handler := db.New()
 
 	if tools.IsAPI(req) {
-		json.NewEncoder(w).encode(gardens.AllIds(handler))
+		json.NewEncoder(w).Encode(gardens.AllIds(handler))
 	}
 }
 
 // Show GET: /gardens/:id
 func Show(w http.ResponseWriter, req *http.Request) {
-	id := tools.GetInt(req, "id")
+	id, err := tools.GetInt(req, "id")
+	if err != nil {
+		log.Printf("GardenCtrl: No ID Provided, can't fetch %d", id)
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Invalid ID provided.")
+		}
+
+		return
+	}
 	handler := db.New()
 
-	garden, err = garden.ByID(handler, id)
+	gard, err := garden.ByID(handler, id)
 
 	if err != nil {
 		log.Printf("GardenCtrl: Failed to fetch Garden %d", id)
 		if tools.IsAPI(req) {
-			tools.GenerateAPIError(&w, "Failed to fetch Garden")
+			tools.GenerateAPIError(w, "Failed to fetch Garden")
 		}
 
 		return
 	}
 
 	if tools.IsAPI(req) {
-		json.NewEncoder(w).encode(garden)
+		json.NewEncoder(w).Encode(gard)
 	}
 }
 
 // Create POST: /gardens; expect name.
 func Create(w http.ResponseWriter, req *http.Request) {
-	name := r.FormValue("name")
+	name := req.FormValue("name")
 	handler := db.New()
 
-	garden := garden.New()
-	garden.Name = name
-	err = garden.Repsert(handler)
+	gard := garden.New()
+	gard.Name = name
+	err := gard.Repsert(handler)
 
 	if err != nil {
 		log.Print("GardenCtrl: Failed to Create Garden.")
 		if tools.IsAPI(req) {
-			tools.GenerateAPIError(&w, "Failed to create Garden")
+			tools.GenerateAPIError(w, "Failed to create Garden")
 		}
 
 		return
 	}
 
 	if tools.IsAPI(req) {
-		json.NewEncoder(w).encode(garden)
+		json.NewEncoder(w).Encode(gard)
 	}
 }
 
 // Update PUT: /gardens/:id
-func Update(rep http.ResponseWriter, req *http.Request) {
+func Update(w http.ResponseWriter, req *http.Request) {
+	// may only update name.
+	name := req.FormValue("name")
+	handler := db.New()
+	id, err := tools.GetInt(req, "id")
+	if err != nil {
+		log.Printf("GardenCtrl: No ID Provided, can't fetch %d", id)
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Invalid ID provided.")
+		}
+
+		return
+	}
+
+	gard, ferr := garden.ByID(handler, id)
+
+	if ferr != nil {
+		log.Printf("GardenCtrl: Failed to fetch Garden %d", id)
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Failed to fetch Garden")
+		}
+
+		return
+	}
+
+	gard.Name = name
+	rerr := gard.Repsert(handler)
+
+	if rerr != nil {
+		log.Print("GardenCtrl: Failed to Create Garden.")
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Failed to create Garden")
+		}
+
+		return
+	}
+
+	if tools.IsAPI(req) {
+		json.NewEncoder(w).Encode(gard)
+	}
 
 }
 
 // Delete DELETE: /gardens/:id
-func Delete(rep http.ResponseWriter, req *http.Request) {
+func Delete(w http.ResponseWriter, req *http.Request) {
+	handler := db.New()
+	id, err := tools.GetInt(req, "id")
+	if err != nil {
+		log.Printf("GardenCtrl: No ID Provided, can't fetch %d", id)
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Invalid ID provided.")
+		}
 
+		return
+	}
+
+	gard, ferr := garden.ByID(handler, id)
+
+	if ferr != nil {
+		log.Printf("GardenCtrl: Failed to fetch Garden %d", id)
+		if tools.IsAPI(req) {
+			tools.GenerateAPIError(w, "Failed to fetch Garden")
+		}
+
+		return
+	}
+
+	gard.Drop(handler)
+
+	if tools.IsAPI(req) {
+		repm := tools.GenerateAPIOk()
+		json.NewEncoder(w).Encode(repm)
+		w.WriteHeader(200)
+	}
 }
 
 // ShowHydro GET: /gardens/:id/hydro/:parcel
-func ShowHydro(rep http.ResponseWriter, req *http.Request) {
+func ShowHydro(w http.ResponseWriter, req *http.Request) {
 
 }
 
 // AddHydro POST: /gardens/:id/hydro/:parcel
-func AddHydro(rep http.ResponseWriter, req *http.Request) {
+func AddHydro(w http.ResponseWriter, req *http.Request) {
 
 }
