@@ -70,6 +70,7 @@ func main() {
 	handler := db.New()
 	// testDB(handler)
 	r := web.RouterSetup()
+
 	web.ListenAndServe(r)
 
 	defer handler.Close()

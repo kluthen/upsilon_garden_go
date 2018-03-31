@@ -1,0 +1,12 @@
+{{define "title"}}Upsilon Garden: Garden#Index{{end}}
+{{define "content"}}
+
+<h1>Upsilon Garden: Garden#Index</h1>
+
+<ul>
+    {{range .}}
+    <li><a href="gardens/{{.ID}}/">To Garden: {{.Name}}</a></li>
+    {{end}}
+</ul>
+
+{{end}}

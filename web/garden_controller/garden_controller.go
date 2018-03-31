@@ -8,6 +8,7 @@ import (
 	"upsilon_garden_go/lib/db"
 	"upsilon_garden_go/lib/garden"
 	"upsilon_garden_go/lib/gardens"
+	"upsilon_garden_go/web/templates"
 	"upsilon_garden_go/web/tools"
 
 	"github.com/gorilla/context"
@@ -18,9 +19,13 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	// tools.IsAPI(req)
 	handler := db.New()
 
+	data := gardens.AllIds(handler)
+
 	if tools.IsAPI(req) {
 		tools.GenerateAPIOk(w)
-		json.NewEncoder(w).Encode(gardens.AllIds(handler))
+		json.NewEncoder(w).Encode(data)
+	} else {
+		templates.RenderTemplate(w, "garden\\index", data)
 	}
 }
 

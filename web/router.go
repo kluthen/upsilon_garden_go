@@ -8,6 +8,7 @@ import (
 	"upsilon_garden_go/lib/garden"
 	"upsilon_garden_go/web/garden_controller"
 	"upsilon_garden_go/web/plant_controller"
+	"upsilon_garden_go/web/templates"
 	"upsilon_garden_go/web/tools"
 
 	"github.com/felixge/httpsnoop"
@@ -128,6 +129,7 @@ func logResultMw(next http.Handler) http.Handler {
 
 // ListenAndServe start listing http server
 func ListenAndServe(router *mux.Router) {
+	templates.LoadTemplates()
 	log.Printf("Web: Started server on 127.0.0.1:80 and listening ... ")
 	http.ListenAndServe(":80", router)
 }
