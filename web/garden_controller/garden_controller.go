@@ -18,6 +18,7 @@ import (
 func Index(w http.ResponseWriter, req *http.Request) {
 	// tools.IsAPI(req)
 	handler := db.New()
+	defer handler.Close()
 
 	data := gardens.AllIds(handler)
 
@@ -27,6 +28,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	} else {
 		templates.RenderTemplate(w, "garden\\index", data)
 	}
+
 }
 
 // Show GET: /gardens/:id
@@ -36,6 +38,8 @@ func Show(w http.ResponseWriter, req *http.Request) {
 	if tools.IsAPI(req) {
 		tools.GenerateAPIOk(w)
 		json.NewEncoder(w).Encode(gard)
+	} else {
+		templates.RenderTemplate(w, "garden\\show", gard)
 	}
 }
 
@@ -43,6 +47,7 @@ func Show(w http.ResponseWriter, req *http.Request) {
 func Create(w http.ResponseWriter, req *http.Request) {
 	name := req.FormValue("name")
 	handler := db.New()
+	defer handler.Close()
 
 	gard := garden.New()
 	gard.Name = name
@@ -68,6 +73,7 @@ func Update(w http.ResponseWriter, req *http.Request) {
 	// may only update name.
 	name := req.FormValue("name")
 	handler := db.New()
+	defer handler.Close()
 	gard := context.Get(req, "garden").(*garden.Garden)
 	gard.Name = name
 	rerr := gard.Repsert(handler)
@@ -91,6 +97,7 @@ func Update(w http.ResponseWriter, req *http.Request) {
 // Delete DELETE: /gardens/:id
 func Delete(w http.ResponseWriter, req *http.Request) {
 	handler := db.New()
+	defer handler.Close()
 	gard := context.Get(req, "garden").(*garden.Garden)
 	gard.Drop(handler)
 

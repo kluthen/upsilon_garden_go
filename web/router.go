@@ -20,47 +20,46 @@ import (
 func RouterSetup() *mux.Router {
 	r := mux.NewRouter()
 
-	// CRUD /gardens
-	r.HandleFunc("/gardens", garden_controller.Index).Methods("GET")
-	r.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
-	r.HandleFunc("/gardens", garden_controller.Create).Methods("POST")
-	r.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
-	r.HandleFunc("/gardens/{gid}", garden_controller.Delete).Methods("DELETE")
-
 	// Hydro functions
 	r.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.ShowHydro).Methods("GET")
 	r.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.AddHydro).Methods("POST")
+	// CRUD /gardens
+	r.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
+	r.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
+	r.HandleFunc("/gardens/{gid}", garden_controller.Delete).Methods("DELETE")
+	r.HandleFunc("/gardens", garden_controller.Index).Methods("GET")
+	r.HandleFunc("/gardens", garden_controller.Create).Methods("POST")
 
 	// CRUD /gardens/:id/plant
-	plantRouter := r.PathPrefix("/gardens/{gid}/plants").Subrouter()
-	plantRouter.HandleFunc("/", plant_controller.Index).Methods("GET")
-	plantRouter.HandleFunc("/{pid}", plant_controller.Show).Methods("GET")
-	plantRouter.HandleFunc("/", plant_controller.Create).Methods("POST")
-	plantRouter.HandleFunc("/{pid}", plant_controller.Update).Methods("PUT")
-	plantRouter.HandleFunc("/{pid}", plant_controller.Delete).Methods("DELETE")
+	plantRouter := r.PathPrefix("/gardens/{gid}").Subrouter()
+	plantRouter.HandleFunc("/plants/{pid}", plant_controller.Show).Methods("GET")
+	plantRouter.HandleFunc("/plants/{pid}", plant_controller.Update).Methods("PUT")
+	plantRouter.HandleFunc("/plants/{pid}", plant_controller.Delete).Methods("DELETE")
+	plantRouter.HandleFunc("/plants/", plant_controller.Index).Methods("GET")
+	plantRouter.HandleFunc("/plants/", plant_controller.Create).Methods("POST")
 
 	// JSON Access ...
 
 	jsonAPI := r.PathPrefix("/api").Subrouter()
 
-	// CRUD /gardens
-	jsonAPI.HandleFunc("/gardens", garden_controller.Index).Methods("GET")
-	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
-	jsonAPI.HandleFunc("/gardens", garden_controller.Create).Methods("POST")
-	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
-	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Delete).Methods("DELETE")
-
 	// Hydro functions
 	jsonAPI.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.ShowHydro).Methods("GET")
 	jsonAPI.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.AddHydro).Methods("POST")
 
+	// CRUD /gardens
+	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
+	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
+	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Delete).Methods("DELETE")
+	jsonAPI.HandleFunc("/gardens", garden_controller.Index).Methods("GET")
+	jsonAPI.HandleFunc("/gardens", garden_controller.Create).Methods("POST")
+
 	// CRUD /gardens/:id/plant
-	APIPlantRouter := jsonAPI.PathPrefix("/gardens/{gid}/plants").Subrouter()
-	APIPlantRouter.HandleFunc("/", plant_controller.Index).Methods("GET")
-	APIPlantRouter.HandleFunc("/{pid}", plant_controller.Show).Methods("GET")
-	APIPlantRouter.HandleFunc("/", plant_controller.Create).Methods("POST")
-	APIPlantRouter.HandleFunc("/{pid}", plant_controller.Update).Methods("PUT")
-	APIPlantRouter.HandleFunc("/{pid}", plant_controller.Delete).Methods("DELETE")
+	APIPlantRouter := jsonAPI.PathPrefix("/gardens/{gid}").Subrouter()
+	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Show).Methods("GET")
+	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Update).Methods("PUT")
+	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Delete).Methods("DELETE")
+	APIPlantRouter.HandleFunc("/plants/", plant_controller.Index).Methods("GET")
+	APIPlantRouter.HandleFunc("/plants/", plant_controller.Create).Methods("POST")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(config.STATIC_FILES))))
 
@@ -93,6 +92,7 @@ func gardenMw(next http.Handler) http.Handler {
 				return
 			}
 			handler := db.New()
+			defer handler.Close()
 
 			gard, err := garden.ByID(handler, id)
 
@@ -117,7 +117,7 @@ func logResultMw(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		m := httpsnoop.CaptureMetrics(next, w, req)
 		log.Printf(
-			"%s %s (code=%d dt=%s written=%d)",
+			"Web: %s %s (code=%d dt=%s written=%d)",
 			req.Method,
 			req.URL,
 			m.Code,
