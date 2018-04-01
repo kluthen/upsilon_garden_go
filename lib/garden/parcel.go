@@ -30,6 +30,29 @@ func newParcel() Parcel {
 	return p
 }
 
+// GetHumanCurrentHydro tell in a human (french) way how much  water there is on this plot.
+func (parcel *Parcel) GetHumanCurrentHydro() string {
+	if parcel.CurrentHydroLevel < 0.2 {
+		return "dur"
+	}
+	if parcel.CurrentHydroLevel < 0.4 {
+		return "sec"
+	}
+	if parcel.CurrentHydroLevel < 0.6 {
+		return "normal"
+	}
+	if parcel.CurrentHydroLevel < 0.8 {
+		return "humide"
+	}
+	if parcel.CurrentHydroLevel < 0.95 {
+		return "boueux"
+	}
+	if parcel.CurrentHydroLevel < 1 {
+		return "submergé"
+	}
+	return "normal"
+}
+
 // HasNextHydroEndDate tell whether an end date has been set or not.
 func (parcel *Parcel) HasNextHydroEndDate() bool {
 	return parcel.NextHydroEnd != time.Time{}
@@ -78,7 +101,7 @@ func (parcel *Parcel) checkAndRecomputeHydro() {
 	parcel.NextHydroEnd, _ = parcel.getNextHydroEndDate()
 }
 
-func (parcel *Parcel) addHydroEvent(endDate time.Time, power float32) {
+func (parcel *Parcel) AddHydroEvent(endDate time.Time, power float32) {
 	var event HydroEvent
 	event.BeginDate = time.Now()
 	event.EndDate = endDate

@@ -33,6 +33,7 @@ func New() *Garden {
 	for i := 0; i < 10; i++ {
 		np := newParcel()
 		np.Position = i
+		np.ID = i
 		garden.Parcels = append(garden.Parcels, np)
 	}
 
@@ -58,6 +59,16 @@ func Create(rows *sql.Rows) *Garden {
 	json.Unmarshal(parcels, &garden.Parcels)
 	json.Unmarshal(plants, &garden.Plants)
 	return garden
+}
+
+// ParcelAt retrieve parcel with given ID
+func (garden *Garden) ParcelAt(ID int) *Parcel {
+	for _, p := range garden.Parcels {
+		if p.ID == ID {
+			return &p
+		}
+	}
+	return nil
 }
 
 // Repsert Garden in Database

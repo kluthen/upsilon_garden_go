@@ -7,7 +7,7 @@
     {{range .}}
     <li class="arc garden_row">
         <a href="gardens/{{.ID}}">To Garden: {{.Name}}</a>
-        <a class="action action_dangerous" href="#" id="action_drop_garden" data-garden-id="{{.ID}}">Drop Garden</a>
+        <a class="action action_dangerous action_drop_garden" href="#" data-garden-id="{{.ID}}">Drop Garden</a>
     </li>
     {{end}}
 </ul>

@@ -12,6 +12,7 @@
             <li class="parcel_item">Base Hydro</li>
             <li class="parcel_item">Current Hydro</li>
             <li class="parcel_item">Next Hydro End Date</li>
+            <li class="parcel_item">Hydro Status</li>
             <li class="actions">Actions</li>
         </ul>
     </li>
@@ -24,8 +25,10 @@
                 <li class="parcel_item">{{.BaseHydroLevel}}</li>
                 <li class="parcel_item">{{.CurrentHydroLevel}}</li>
                 <li class="parcel_item">{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
-                <li class="actions">{{ if eq .PlantID 0 }}<a class="action action_plant" href="#" id="action_add_plant" data-parcel-id="{{.ID}}">Add Plant</a>{{end}}
-                    <a class="action action_water" href="#" id="action_water" data-parcel-id="{{.ID}}">Water Parcel</a>
+                <li class="parcel_item hydro_status" data-parcel-id="{{.ID}}"></li>
+                <li class="actions">{{ if eq .PlantID 0 }}<a class="action action_plant action_add_plant" href="#" data-parcel-id="{{.ID}}">Add Plant</a>{{end}}
+                    <a class="action action_water " href="#" data-parcel-id="{{.ID}}" data-garden-id="{{$.ID}}">Water Parcel</a>
+                    <a class="action action_get_water " href="#" data-parcel-id="{{.ID}}" data-garden-id="{{$.ID}}">Hydro Status</a>
                 </li>
             </ul>
         </li>

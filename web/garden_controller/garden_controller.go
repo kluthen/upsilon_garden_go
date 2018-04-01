@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 	"upsilon_garden_go/lib/db"
 	"upsilon_garden_go/lib/garden"
 	"upsilon_garden_go/lib/gardens"
@@ -114,12 +115,33 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// ShowHydro GET: /gardens/:id/hydro/:parcel
+// ShowHydro GET: /api/gardens/:id/hydro/:parcel
 func ShowHydro(w http.ResponseWriter, req *http.Request) {
+	gard := context.Get(req, "garden").(*garden.Garden)
+	pid, _ := tools.GetInt(req, "parcel")
 
+	parcel := gard.ParcelAt(pid)
+	repm := tools.GenerateAPIOk(w)
+	repm["hydro"] = parcel.GetHumanCurrentHydro()
+
+	json.NewEncoder(w).Encode(repm)
 }
 
-// AddHydro POST: /gardens/:id/hydro/:parcel
+// AddHydro POST: /api/gardens/:id/hydro/:parcel
 func AddHydro(w http.ResponseWriter, req *http.Request) {
+	gard := context.Get(req, "garden").(*garden.Garden)
+	pid, _ := tools.GetInt(req, "parcel")
 
+	parcel := gard.ParcelAt(pid)
+	dur, _ := time.ParseDuration("8h")
+	parcel.AddHydroEvent(time.Now().Add(dur), 0.15)
+
+	handler := db.New()
+	defer handler.Close()
+	gard.Repsert(handler)
+
+	repm := tools.GenerateAPIOk(w)
+	repm["hydro"] = parcel.GetHumanCurrentHydro()
+
+	json.NewEncoder(w).Encode(repm)
 }

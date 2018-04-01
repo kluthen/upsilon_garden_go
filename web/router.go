@@ -23,9 +23,6 @@ func RouterSetup() *mux.Router {
 	rand.Seed(time.Now().Unix())
 	r := mux.NewRouter()
 
-	// Hydro functions
-	r.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.ShowHydro).Methods("GET")
-	r.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.AddHydro).Methods("POST")
 	// CRUD /gardens
 	r.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
 	r.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
