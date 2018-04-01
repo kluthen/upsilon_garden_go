@@ -4,9 +4,9 @@
 <h1>{{.Name}} Garden</h1>
 <h3><a href="/gardens">Back</a></h3>
 
-<ul>
+<ul style="list-style-type:none;">
     <li>
-        <ul>
+        <ul class="parcel">
             <li>#</li>
             <li>Has Plant?</li>
             <li>Base Hydro</li>
@@ -16,7 +16,7 @@
     </li>
     {{range .Parcels}}
         <li>
-            <ul>
+            <ul class="parcel">
                 <li>{{.Position}}</li>
                 <li>{{ if ne .PlantID 0 }}<a href="plants/{{.PlantID}}">To Plant</a>
                     {{- else}}No Plant{{end}}</li>

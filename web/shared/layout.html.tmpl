@@ -2,9 +2,12 @@
 <html>
 <head>
     <title>{{block "title" .}} {{end}}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/app.css">
 </head>
 <body>
         {{template "content" .}}
+
+        <script src="/static/js/app.js"></script>
 </body>
 </html>
 {{end}}
