@@ -5,13 +5,14 @@
 
 <ul>
     {{range .}}
-    <li class="garden_row">
+    <li class="arc garden_row">
         <a href="gardens/{{.ID}}">To Garden: {{.Name}}</a>
-        <a href="#" id="action_drop_garden" data-garden-id="{{.ID}}">Drop Garden</a>
+        <a class="action action_dangerous" href="#" id="action_drop_garden" data-garden-id="{{.ID}}">Drop Garden</a>
     </li>
     {{end}}
 </ul>
 
+<h2> Create a new Garden</h2>
 <form method="POST" action="/gardens">
     <label for="name">Garden's name:</label>
     <input type="text" name="name" id="name" ></input>

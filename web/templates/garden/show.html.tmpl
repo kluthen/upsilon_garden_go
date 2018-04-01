@@ -7,25 +7,25 @@
 <ul style="list-style-type:none;">
     <li>
         <ul class="parcel">
-            <li>#</li>
-            <li>Has Plant?</li>
-            <li>Base Hydro</li>
-            <li>Current Hydro</li>
-            <li>Next Hydro End Date</li>
-            <li>Actions</li>
+            <li class="parcel_item">#</li>
+            <li class="parcel_item">Has Plant?</li>
+            <li class="parcel_item">Base Hydro</li>
+            <li class="parcel_item">Current Hydro</li>
+            <li class="parcel_item">Next Hydro End Date</li>
+            <li class="actions">Actions</li>
         </ul>
     </li>
     {{range .Parcels}}
-        <li>
+        <li class="arc">
             <ul class="parcel">
-                <li>{{.Position}}</li>
-                <li>{{ if ne .PlantID 0 }}<a href="plants/{{.PlantID}}">To Plant</a>
+                <li class="parcel_item">{{.Position}}</li>
+                <li class="parcel_item">{{ if ne .PlantID 0 }}<a href="plants/{{.PlantID}}">To Plant</a>
                     {{- else}}No Plant{{end}}</li>
-                <li>{{.BaseHydroLevel}}</li>
-                <li>{{.CurrentHydroLevel}}</li>
-                <li>{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
-                <li>{{ if eq .PlantID 0 }}<a class="action" href="#" id="action_add_plant" data-parcel-id="{{.ID}}">Add Plant</a>{{end}}
-                    <a class="action" href="#" id="action_water" data-parcel-id="{{.ID}}">Water Parcel</a>
+                <li class="parcel_item">{{.BaseHydroLevel}}</li>
+                <li class="parcel_item">{{.CurrentHydroLevel}}</li>
+                <li class="parcel_item">{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
+                <li class="actions">{{ if eq .PlantID 0 }}<a class="action action_plant" href="#" id="action_add_plant" data-parcel-id="{{.ID}}">Add Plant</a>{{end}}
+                    <a class="action action_water" href="#" id="action_water" data-parcel-id="{{.ID}}">Water Parcel</a>
                 </li>
             </ul>
         </li>

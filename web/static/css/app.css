@@ -3,13 +3,17 @@
 */
 
 body {
-    width: 100%;
+    width: 80%;
+    margin: auto;
 }
 
 .parcel {
     display: flex;
+    justify-content: space-between;
     list-style-type: none;
     width: 100%;
+    margin-top:0px;
+    padding: 4px;
 }
 
 .garden_row {
@@ -19,6 +23,56 @@ body {
 
 
 .parcel li{
-    width: 150px;
     list-style-type: none;
 }
+
+.actions {
+    width: 400px;
+}
+
+.parcel_item {
+    width: 150px;
+}
+
+.action {
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 2px;
+    padding: 2px;
+}
+
+.action_dangerous {
+    border-color: #EE8888;
+    background-color: #FF5555;
+}
+
+.action_dangerous:hover {
+    border-color: #EE8888;
+    background-color: #FF3333;
+}
+
+.action_water {
+    border-color: #8888EE;
+    background-color: #5555EE;
+}
+
+.action_water:hover {
+    border-color: #8888EE;
+    background-color: #3333FF;
+}
+
+
+.action_plant {
+    border-color: #88EE88;
+    background-color: #55EE55;
+}
+
+.action_plant:hover {
+    border-color: #88EE88;
+    background-color: #33FF33;
+}
+
+li.arc { 
+    background: rgba(230,230,230,230);
+ }
+li.arc:nth-child(odd) { background: rgba(200,200,200,230) }
