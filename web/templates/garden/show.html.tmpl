@@ -12,6 +12,7 @@
             <li>Base Hydro</li>
             <li>Current Hydro</li>
             <li>Next Hydro End Date</li>
+            <li>Actions</li>
         </ul>
     </li>
     {{range .Parcels}}
@@ -23,6 +24,9 @@
                 <li>{{.BaseHydroLevel}}</li>
                 <li>{{.CurrentHydroLevel}}</li>
                 <li>{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
+                <li>{{ if eq .PlantID 0 }}<a class="action" href="#" id="action_add_plant" data-parcel-id="{{.ID}}">Add Plant</a>{{end}}
+                    <a class="action" href="#" id="action_water" data-parcel-id="{{.ID}}">Water Parcel</a>
+                </li>
             </ul>
         </li>
     {{end}}

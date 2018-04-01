@@ -134,5 +134,14 @@ func logResultMw(next http.Handler) http.Handler {
 func ListenAndServe(router *mux.Router) {
 	templates.LoadTemplates()
 	log.Printf("Web: Started server on 127.0.0.1:80 and listening ... ")
-	http.ListenAndServe(":80", router)
+
+	s := &http.Server{
+		Addr:           ":80",
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+
+	s.ListenAndServe()
 }

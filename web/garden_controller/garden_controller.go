@@ -3,6 +3,7 @@ package garden_controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"upsilon_garden_go/lib/db"
@@ -65,6 +66,8 @@ func Create(w http.ResponseWriter, req *http.Request) {
 	if tools.IsAPI(req) {
 		tools.GenerateAPIOk(w)
 		json.NewEncoder(w).Encode(gard)
+	} else {
+		http.Redirect(w, req, fmt.Sprintf("/gardens/%d", gard.ID), http.StatusSeeOther)
 	}
 }
 
@@ -90,6 +93,8 @@ func Update(w http.ResponseWriter, req *http.Request) {
 	if tools.IsAPI(req) {
 		tools.GenerateAPIOk(w)
 		json.NewEncoder(w).Encode(gard)
+	} else {
+		http.Redirect(w, req, fmt.Sprintf("/gardens/%d", gard.ID), http.StatusSeeOther)
 	}
 
 }
@@ -104,6 +109,8 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	if tools.IsAPI(req) {
 		repm := tools.GenerateAPIOk(w)
 		json.NewEncoder(w).Encode(repm)
+	} else {
+		http.Redirect(w, req, "/gardens", http.StatusSeeOther)
 	}
 }
 

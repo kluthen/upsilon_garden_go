@@ -12,6 +12,11 @@ body {
     width: 100%;
 }
 
+.garden_row {
+    display: flex;
+    justify-content: space-between;
+}
+
 
 .parcel li{
     width: 150px;
