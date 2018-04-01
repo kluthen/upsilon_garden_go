@@ -2,7 +2,9 @@ package web
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 	"upsilon_garden_go/config"
 	"upsilon_garden_go/lib/db"
 	"upsilon_garden_go/lib/garden"
@@ -18,6 +20,7 @@ import (
 
 // RouterSetup Prepare routing.
 func RouterSetup() *mux.Router {
+	rand.Seed(time.Now().Unix())
 	r := mux.NewRouter()
 
 	// Hydro functions

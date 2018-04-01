@@ -54,6 +54,7 @@ Parcel :
 	plant_id,
 	base_hydro,
 	running_hydro: [HydroEvent]
+	next_hydro_end
 }
 
 Plant 

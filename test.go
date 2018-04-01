@@ -41,14 +41,14 @@ func testDB(handler *db.Handler) {
 		ids = append(ids, gard.ID)
 		ids = append(ids, s_garden.ID)
 
-		res_gardens, err := garden.ByIDs(handler, ids)
+		resGardens, err := garden.ByIDs(handler, ids)
 		if err != nil {
 			log.Fatalf("Test: Failed to find ids : %s", err)
 		} else {
-			if len(res_gardens) != 2 {
-				log.Fatalf("Test: Hasn't found appropriate number of rows: %d (expected 2)", len(res_gardens))
+			if len(resGardens) != 2 {
+				log.Fatalf("Test: Hasn't found appropriate number of rows: %d (expected 2)", len(resGardens))
 			} else {
-				for _, g := range res_gardens {
+				for _, g := range resGardens {
 					log.Printf("Test: Found in ids: %s", g.String())
 				}
 			}
@@ -70,7 +70,6 @@ func main() {
 	handler := db.New()
 	// testDB(handler)
 	r := web.RouterSetup()
-
 	web.ListenAndServe(r)
 
 	defer handler.Close()

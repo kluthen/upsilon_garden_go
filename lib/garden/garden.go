@@ -26,6 +26,16 @@ type Garden struct {
 func New() *Garden {
 	garden := new(Garden)
 	garden.ID = 0
+	garden.LastUpdate = time.Now()
+
+	// force 10 parcels in a garden.
+
+	for i := 0; i < 10; i++ {
+		np := newParcel()
+		np.Position = i
+		garden.Parcels = append(garden.Parcels, np)
+	}
+
 	return garden
 }
 

@@ -4,4 +4,28 @@
 <h1>{{.Name}} Garden</h1>
 <h3><a href="/gardens">Back</a></h3>
 
+<ul>
+    <li>
+        <ul>
+            <li>#</li>
+            <li>Has Plant?</li>
+            <li>Base Hydro</li>
+            <li>Current Hydro</li>
+            <li>Next Hydro End Date</li>
+        </ul>
+    </li>
+    {{range .Parcels}}
+        <li>
+            <ul>
+                <li>{{.Position}}</li>
+                <li>{{ if ne .PlantID 0 }}<a href="plants/{{.PlantID}}">To Plant</a>
+                    {{- else}}No Plant{{end}}</li>
+                <li>{{.BaseHydroLevel}}</li>
+                <li>{{.CurrentHydroLevel}}</li>
+                <li>{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
+            </ul>
+        </li>
+    {{end}}
+</ul>
+
 {{end}}
