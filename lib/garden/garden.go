@@ -180,3 +180,14 @@ func ByIDs(dbh *db.Handler, ids []int) ([]*Garden, error) {
 
 	return results, nil
 }
+
+// RefreshGarden ensure that all parcels are up to date and that plant have correctly evolved since last wake up.
+func (garden *Garden) RefreshGarden() bool {
+	altered := false
+	// ATM only ensure that watering is updated.
+	for idx := range garden.Parcels {
+		altered = altered || garden.Parcels[idx].checkAndRecomputeHydro()
+	}
+
+	return altered
+}

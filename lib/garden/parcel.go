@@ -81,7 +81,7 @@ func (parcel *Parcel) HasNextHydroEndDate() bool {
 
 // GetNextHydroEndDate tell when next hydro event will end
 func (parcel *Parcel) getNextHydroEndDate() (time.Time, bool) {
-	t := time.Now()
+	t := time.Time{}
 	var found bool
 	found = false
 
@@ -100,16 +100,20 @@ func (parcel *Parcel) getNextHydroEndDate() (time.Time, bool) {
 	return t, found
 }
 
-func (parcel *Parcel) checkAndRecomputeHydro() {
+// checkAndRecomputeHydro validate hydro events and remove them if appropriate. Tell if an alteration has been done.
+func (parcel *Parcel) checkAndRecomputeHydro() bool {
 	var addedPower float32
 	var newHydroEvents []HydroEvent
 	now := time.Now()
+	altered := false
 
 	addedPower += parcel.BaseHydroLevel
 	for _, event := range parcel.RunningHydroEvents {
 		if event.EndDate.Sub(now).Seconds() > 0 {
 			addedPower += event.Power
 			newHydroEvents = append(newHydroEvents, event)
+		} else {
+			altered = true
 		}
 	}
 
@@ -119,9 +123,14 @@ func (parcel *Parcel) checkAndRecomputeHydro() {
 		parcel.CurrentHydroLevel = 0.99
 	}
 
+	parcel.RunningHydroEvents = newHydroEvents
+
 	parcel.NextHydroEnd, _ = parcel.getNextHydroEndDate()
+
+	return altered
 }
 
+// AddHydroEvent create and add hydro event to a parcel.
 func (parcel *Parcel) AddHydroEvent(endDate time.Time, power float32) {
 	var event HydroEvent
 	event.BeginDate = time.Now()

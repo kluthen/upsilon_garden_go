@@ -105,6 +105,13 @@ func gardenMw(next http.Handler) http.Handler {
 				return
 			}
 
+			// ensure the garden is up to date, also recompute projection and stuff like that.
+
+			if gard.RefreshGarden() {
+				// returns true when altered. Update it.
+				gard.Repsert(handler)
+			}
+
 			context.Set(req, "garden", gard)
 		}
 
