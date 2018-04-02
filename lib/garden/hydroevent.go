@@ -1,6 +1,7 @@
 package garden
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -9,4 +10,10 @@ type HydroEvent struct {
 	BeginDate time.Time
 	EndDate   time.Time
 	Power     float32
+}
+
+func (hevt *HydroEvent) String() string {
+	return fmt.Sprintf("HydroEvent {"+
+		"Begin: %v, End: %v, Power: %f}",
+		hevt.BeginDate, hevt.EndDate, hevt.Power)
 }

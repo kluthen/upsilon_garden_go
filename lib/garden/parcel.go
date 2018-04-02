@@ -1,6 +1,7 @@
 package garden
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -14,6 +15,26 @@ type Parcel struct {
 	PlantID            int
 	RunningHydroEvents []HydroEvent
 	NextHydroEnd       time.Time
+}
+
+func (parcel *Parcel) String() string {
+	var events string
+
+	for _, evt := range parcel.RunningHydroEvents {
+		events += evt.String() + " "
+	}
+
+	return fmt.Sprintf("Parcel {"+
+		"ID: %d"+
+		", Position: %d"+
+		", CurrentHydroLevel: %f"+
+		", BaseHydroLevel: %f"+
+		", PlantID: %d"+
+		", Events: %s"+
+		", NextHydroEnd: %v }",
+		parcel.ID, parcel.Position,
+		parcel.CurrentHydroLevel, parcel.BaseHydroLevel,
+		parcel.PlantID, events, parcel.NextHydroEnd)
 }
 
 var baseHydroAvailable = [4]float32{0.15, 0.2, 0.25, 0.30}

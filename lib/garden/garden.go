@@ -42,12 +42,20 @@ func New() *Garden {
 
 // String pretty displayer
 func (garden *Garden) String() string {
+
+	var parcels string
+
+	for _, p := range garden.Parcels {
+		parcels += p.String() + ", "
+	}
+
 	return fmt.Sprintf("Garden { "+
 		"ID: %d"+
 		", name: %s"+
 		", lastUpdate: %s"+
 		", nextUpdate: %s"+
-		" }", garden.ID, garden.Name, garden.LastUpdate, garden.NextUpdate)
+		", parcels: %s"+
+		" }", garden.ID, garden.Name, garden.LastUpdate, garden.NextUpdate, parcels)
 }
 
 // Create a Garden from database
@@ -63,9 +71,9 @@ func Create(rows *sql.Rows) *Garden {
 
 // ParcelAt retrieve parcel with given ID
 func (garden *Garden) ParcelAt(ID int) *Parcel {
-	for _, p := range garden.Parcels {
+	for idx, p := range garden.Parcels {
 		if p.ID == ID {
-			return &p
+			return &garden.Parcels[idx]
 		}
 	}
 	return nil
