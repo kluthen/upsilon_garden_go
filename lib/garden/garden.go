@@ -45,8 +45,8 @@ func (garden *Garden) String() string {
 
 	var parcels string
 
-	for _, p := range garden.Parcels {
-		parcels += p.String() + ", "
+	for i := range garden.Parcels {
+		parcels += garden.Parcels[i].String() + ", "
 	}
 
 	return fmt.Sprintf("Garden { "+
@@ -67,16 +67,6 @@ func Create(rows *sql.Rows) *Garden {
 	json.Unmarshal(parcels, &garden.Parcels)
 	json.Unmarshal(plants, &garden.Plants)
 	return garden
-}
-
-// ParcelAt retrieve parcel with given ID
-func (garden *Garden) ParcelAt(ID int) *Parcel {
-	for idx, p := range garden.Parcels {
-		if p.ID == ID {
-			return &garden.Parcels[idx]
-		}
-	}
-	return nil
 }
 
 // Repsert Garden in Database
@@ -181,12 +171,77 @@ func ByIDs(dbh *db.Handler, ids []int) ([]*Garden, error) {
 	return results, nil
 }
 
+// DropPlant Drop a plant from garden.
+func (garden *Garden) DropPlant(pid int) {
+	var nPlants []Plant
+
+	for idx := range garden.Plants {
+		if garden.Plants[idx].ID != pid {
+			nPlants = append(nPlants, garden.Plants[idx])
+		}
+	}
+
+	for idx := range garden.Parcels {
+		if garden.Parcels[idx].PlantID == pid {
+			garden.Parcels[idx].PlantID = 0
+			break
+		}
+	}
+
+	garden.Plants = nPlants
+}
+
+// AddPlant add a plant at appointed parcel, if no plant already there.
+func (garden *Garden) AddPlant(pid int, plant Plant) error {
+	parcel := garden.ParcelAt(pid)
+
+	if parcel != nil {
+		// well ... maybe i ll turn all this in to db table ... one day.
+		plant.ID = pid
+		parcel.PlantID = pid
+		garden.Plants = append(garden.Plants, plant)
+		return nil
+	}
+
+	log.Print("Garden: No Parcel exists at provided position")
+	return errors.New("No Parcel exists at provided position")
+}
+
+// ParcelAt retrieve parcel with given ID
+func (garden *Garden) ParcelAt(ID int) *Parcel {
+	for idx := range garden.Parcels {
+		if garden.Parcels[idx].ID == ID {
+			return &garden.Parcels[idx]
+		}
+	}
+	return nil
+}
+
+// PlantByID retrieve parcel with given ID
+func (garden *Garden) PlantByID(ID int) *Plant {
+	for idx := range garden.Plants {
+		if garden.Plants[idx].ID == ID {
+			return &garden.Plants[idx]
+		}
+	}
+	return nil
+}
+
 // RefreshGarden ensure that all parcels are up to date and that plant have correctly evolved since last wake up.
 func (garden *Garden) RefreshGarden() bool {
 	altered := false
 	// ATM only ensure that watering is updated.
+	now := time.Now()
 	for idx := range garden.Parcels {
-		altered = altered || garden.Parcels[idx].checkAndRecomputeHydro()
+		parcel := garden.Parcels[idx]
+		plant := garden.PlantByID(parcel.PlantID)
+		alt, plantDestroyed := parcel.refreshParcel(now, garden.LastUpdate, plant)
+
+		altered = alt || altered
+		if plantDestroyed {
+			log.Printf("Garden: Plant %d has been destroyed!", parcel.PlantID)
+			garden.DropPlant(parcel.PlantID)
+		}
 	}
 
 	return altered

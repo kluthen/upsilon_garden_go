@@ -15,6 +15,7 @@ $(document).ready( function() {
             }
         });
     });
+    
     $(".action_water").click(function() {
         pid = $(this).data("parcel-id");
         gid = $(this).data("garden-id");
@@ -32,6 +33,7 @@ $(document).ready( function() {
             }
         });
     });
+
     $(".action_get_water").click(function() {
         pid = $(this).data("parcel-id");
         gid = $(this).data("garden-id");
@@ -49,8 +51,48 @@ $(document).ready( function() {
             }
         });
     });
+
     $(".action_add_plant").click(function() {
-        alert("Not implemented yet.");
+        pid = $(this).data("parcel-id");
+        gid = $(this).data("garden-id");
+
+        data = 'name='+encodeURIComponent('Some Plant')
+                +'&plant_type='+ encodeURIComponent('Some Type')
+                +'&parcel='+pid;
+
+        $.ajax({
+            url: '/api/gardens/'+gid+'/plants',
+            type:'POST',
+            data: data,
+            success: function(result) {
+                console.log(result)
+                location.reload();
+            }, error: function(result) {
+                // Do something with the result
+                alert("Failed to create plant...");
+                console.log(result)
+                location.reload();
+            }
+        })
+    });
+
+    $(".action_drop_plant").click(function() {
+        pid = $(this).data("plant-id");
+        gid = $(this).data("garden-id");
+
+        $.ajax({
+            url: '/api/gardens/'+gid+'/plants/'+pid,
+            type:'DELETE',
+            success: function(result) {
+                console.log(result)
+                location.reload();
+            }, error: function(result) {
+                // Do something with the result
+                alert("Failed to drop plant...");
+                console.log(result)
+                location.reload();
+            }
+        })
     });
     
 })

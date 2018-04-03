@@ -7,5 +7,12 @@ const (
     DB_PASSWORD = "password"
     DB_NAME     = "name"
     DB_HOST     = "host"
-    STATIC_FILES= "web/static/"
+    STATIC_FILES    = "web\\static"
+	WEB_TEMPLATES   = "web\\templates"
+	WEB_LAYOUTS     = "web\\shared"
+	PLANT_TIME_TIC  = 15
+	PLANT_DD_TIC   = -20
+	PLANT_ND_TIC   = -3
+	PLANT_OK_TIC   = 1
+	PLANT_SUP_TIC  = 3
 )

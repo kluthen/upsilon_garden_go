@@ -48,8 +48,8 @@ func testDB(handler *db.Handler) {
 			if len(resGardens) != 2 {
 				log.Fatalf("Test: Hasn't found appropriate number of rows: %d (expected 2)", len(resGardens))
 			} else {
-				for _, g := range resGardens {
-					log.Printf("Test: Found in ids: %s", g.String())
+				for i := range resGardens {
+					log.Printf("Test: Found in ids: %s", resGardens[i].String())
 				}
 			}
 		}

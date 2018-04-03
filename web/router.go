@@ -46,26 +46,27 @@ func RouterSetup() *mux.Router {
 	jsonAPI.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.ShowHydro).Methods("GET")
 	jsonAPI.HandleFunc("/gardens/{gid}/hydro/{parcel}", garden_controller.AddHydro).Methods("POST")
 
-	// CRUD /gardens
+	// CRUD /api/gardens
 	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Show).Methods("GET")
 	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Update).Methods("PUT")
 	jsonAPI.HandleFunc("/gardens/{gid}", garden_controller.Delete).Methods("DELETE")
 	jsonAPI.HandleFunc("/gardens", garden_controller.Index).Methods("GET")
 	jsonAPI.HandleFunc("/gardens", garden_controller.Create).Methods("POST")
 
-	// CRUD /gardens/:id/plant
+	// CRUD /api/gardens/:id/plant
 	APIPlantRouter := jsonAPI.PathPrefix("/gardens/{gid}").Subrouter()
 	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Show).Methods("GET")
 	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Update).Methods("PUT")
 	APIPlantRouter.HandleFunc("/plants/{pid}", plant_controller.Delete).Methods("DELETE")
-	APIPlantRouter.HandleFunc("/plants/", plant_controller.Index).Methods("GET")
-	APIPlantRouter.HandleFunc("/plants/", plant_controller.Create).Methods("POST")
+	APIPlantRouter.HandleFunc("/plants", plant_controller.Index).Methods("GET")
+	APIPlantRouter.HandleFunc("/plants", plant_controller.Create).Methods("POST")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(config.STATIC_FILES))))
 
 	r.Use(logResultMw)
 	r.Use(loggingMw)
 	r.Use(gardenMw)
+	r.Use(plantMw)
 	return r
 }
 
@@ -107,12 +108,47 @@ func gardenMw(next http.Handler) http.Handler {
 
 			// ensure the garden is up to date, also recompute projection and stuff like that.
 
-			if gard.RefreshGarden() {
-				// returns true when altered. Update it.
-				gard.Repsert(handler)
-			}
+			gard.RefreshGarden()
 
 			context.Set(req, "garden", gard)
+		}
+
+		next.ServeHTTP(w, req)
+
+		// post exec check if we had a garden.
+		g := context.Get(req, "garden")
+		if g != nil {
+			gard := g.(*garden.Garden)
+			handler := db.New()
+			defer handler.Close()
+			gard.LastUpdate = time.Now()
+			gard.Repsert(handler)
+		}
+	})
+}
+
+func plantMw(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if tools.HasValue(req, "pid") {
+			plantId, err := tools.GetInt(req, "pid")
+			gardenId, err := tools.GetInt(req, "gid")
+
+			gard := context.Get(req, "garden").(*garden.Garden)
+
+			if err != nil {
+				log.Printf("Web:  Failed to get plant id of garden %d", gardenId)
+				tools.GenerateAPIError(w, "Failed to prepare reply.")
+				return
+			}
+
+			plant := gard.PlantByID(plantId)
+
+			if plant == nil {
+				log.Printf("Web:  Failed to fetch Plant with id %d on garden %d ", plantId, gardenId)
+				tools.GenerateAPIError(w, "Failed to prepare reply.")
+				return
+			}
+			context.Set(req, "plant", plant)
 		}
 
 		next.ServeHTTP(w, req)

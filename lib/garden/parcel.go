@@ -20,8 +20,8 @@ type Parcel struct {
 func (parcel *Parcel) String() string {
 	var events string
 
-	for _, evt := range parcel.RunningHydroEvents {
-		events += evt.String() + " "
+	for idx := range parcel.RunningHydroEvents {
+		events += parcel.RunningHydroEvents[idx].String() + " "
 	}
 
 	return fmt.Sprintf("Parcel {"+
@@ -85,7 +85,8 @@ func (parcel *Parcel) getNextHydroEndDate() (time.Time, bool) {
 	var found bool
 	found = false
 
-	for _, event := range parcel.RunningHydroEvents {
+	for idx := range parcel.RunningHydroEvents {
+		event := &parcel.RunningHydroEvents[idx]
 		if !found {
 			t = event.EndDate
 			found = true
@@ -100,6 +101,37 @@ func (parcel *Parcel) getNextHydroEndDate() (time.Time, bool) {
 	return t, found
 }
 
+// refreshParcel will check plant and parcel for update.
+func (parcel *Parcel) refreshParcel(now time.Time, lastVisit time.Time, plant *Plant) (altered bool, plantDestroyed bool) {
+	altered = false
+	plantDestroyed = false
+
+	if plant == nil {
+		altered = parcel.checkAndRecomputeHydro()
+		return
+	}
+
+	if !parcel.HasNextHydroEndDate() {
+		return
+	}
+
+	if now.Sub(parcel.NextHydroEnd).Seconds() < 0 {
+		altered, plantDestroyed = plant.checkAndUpdate(lastVisit, now, parcel.CurrentHydroLevel)
+		return
+	}
+
+	altered = true
+	lastNow := parcel.NextHydroEnd
+	_, plantDestroyed = plant.checkAndUpdate(lastVisit, parcel.NextHydroEnd, parcel.CurrentHydroLevel)
+	if plantDestroyed {
+		parcel.checkAndRecomputeHydro()
+		return
+	}
+
+	parcel.refreshParcel(now, lastNow, plant)
+	return
+}
+
 // checkAndRecomputeHydro validate hydro events and remove them if appropriate. Tell if an alteration has been done.
 func (parcel *Parcel) checkAndRecomputeHydro() bool {
 	var addedPower float32
@@ -108,7 +140,8 @@ func (parcel *Parcel) checkAndRecomputeHydro() bool {
 	altered := false
 
 	addedPower += parcel.BaseHydroLevel
-	for _, event := range parcel.RunningHydroEvents {
+	for idx := range parcel.RunningHydroEvents {
+		event := parcel.RunningHydroEvents[idx]
 		if event.EndDate.Sub(now).Seconds() > 0 {
 			addedPower += event.Power
 			newHydroEvents = append(newHydroEvents, event)

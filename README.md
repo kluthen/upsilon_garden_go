@@ -18,21 +18,21 @@ Objectif:
 
 Requetes: 
 
-* CRUD: /garden 					Gestion des jardins.
-* CRUD: /garden/:id/plant 			Gestion des plantes dans un jardin. 
-* GET:  /garden/:id/hydro/:parcel	Action: Récuperer l'hydro courante de la parcelle ciblée; MAJ Jardin 
-	( GET /garden/:id dois maintnenat retourné cette valeur d'hydro pour la parcelle.)
-* PUT:	/garden/:id/hydro/:parcel	Action: Arrose la parcelle 
+* CRUD: /gardens 					Gestion des jardins.
+* CRUD: /gardens/:id/plants 			Gestion des plantes dans un jardin. 
+* GET:  /gardens/:id/hydro/:parcel	Action: Récuperer l'hydro courante de la parcelle ciblée; MAJ Jardin 
+	( GET /gardens/:id dois maintnenat retourné cette valeur d'hydro pour la parcelle.)
+* PUT:	/gardens/:id/hydro/:parcel	Action: Arrose la parcelle 
 
-Sur chaque GET /garden et /garden/:id/plant/ on dois mettre a jour le jardin (avancement des tours et evolutions des plantes)
+Sur chaque GET /gardens et /gardens/:id/plants/ on dois mettre a jour le jardin (avancement des tours et evolutions des plantes)
 
-Create Garden: POST /garden : { name: }
-Update Garden: PUT /garden/:id : { name: }
+Create Garden: POST /gardens : { name: }
+Update Garden: PUT /gardens/:id : { name: }
 
-Create Plant: POST /garden/:id/plant : { name: , plant_type: , parcel: }
-Update Plant: PUT /garden/:id/plant/:id { name: }
+Create Plant: POST /gardens/:id/plants : { name: , plant_type: , parcel: }
+Update Plant: PUT /gardens/:id/plants/:id { name: }
 
-Water Parcel: POST /garden/:id/hydro/:parcel {power:}
+Water Parcel: POST /gardens/:id/hydro/:parcel {power:}
 
 Objets: 
 
@@ -63,7 +63,6 @@ Plant
 	level,
 	name,
 	plant_type,
-	current_hydro,
 	target_hydro: HydroRange,
 	next_update,
 	sp_per_level,			// 5
