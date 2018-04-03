@@ -20,7 +20,13 @@
         <li class="arc">
             <ul class="parcel">
                 <li class="parcel_item">{{.Position}}</li>
-                <li class="parcel_item">{{ if ne .PlantID 0 }}<a href="/gardens/{{$.ID}}/plants/{{.PlantID}}">To Plant</a>
+                <li class="parcel_item">{{ if ne .PlantID 0 }}
+                    <!-- 
+                        <a href="/gardens/{{$.ID}}/plants/{{.PlantID}}">To Plant</a>
+                    -->
+                    {{ with $.PlantByID .PlantID}}
+                        Plant: {{ .Name }} (Lvl: {{.Level}}; SP: {{.SpCurrent}}/{{.SpMax}})
+                    {{ end }}
                     {{- else}}No Plant{{end}}</li>
                 <li class="parcel_item">{{.BaseHydroLevel}}</li>
                 <li class="parcel_item">{{.CurrentHydroLevel}}</li>
