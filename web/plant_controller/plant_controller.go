@@ -67,12 +67,15 @@ func Create(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	err = gard.AddPlant(pid, plant)
+
 	if err != nil {
 		if tools.IsAPI(req) {
 			log.Printf("PlantCtrl: Failed to create plants of garden %d: %s", gard.ID, err)
 			tools.GenerateAPIError(w, "Failed to prepare reply.")
 			return
 		}
+	} else {
+		log.Printf("PlantCtrl: Successfully added a Plant at parcel: %d", pid)
 	}
 
 	if tools.IsAPI(req) {

@@ -47,7 +47,7 @@ func newParcel() Parcel {
 	p.Position = 0
 	p.BaseHydroLevel = baseHydroAvailable[rand.Intn(len(baseHydroAvailable))]
 	p.CurrentHydroLevel = p.BaseHydroLevel
-	p.PlantID = 0
+	p.PlantID = -1
 	p.NextHydroEnd = time.Time{}
 	return p
 }
@@ -120,6 +120,12 @@ func (parcel *Parcel) refreshParcel(now time.Time, lastVisit time.Time, plant *P
 			}
 			return
 		}
+	} else {
+		altered, plantDestroyed = plant.checkAndUpdate(lastVisit, now, parcel.CurrentHydroLevel)
+		if altered {
+			log.Printf("Parcel: Plant Altered: %s", plant.String())
+		}
+		return
 	}
 
 	altered = true

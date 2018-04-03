@@ -3,6 +3,7 @@ package garden
 import (
 	"fmt"
 	"log"
+	"runtime/debug"
 	"time"
 	"upsilon_garden_go/config"
 )
@@ -58,6 +59,16 @@ func (plant *Plant) String() string {
 // checkAndUpdate check alteration to the plant (sp, level up,etc) update stats accordingly and tell if plant has been altered.
 // returns ()
 func (plant *Plant) checkAndUpdate(lastVisit time.Time, toDate time.Time, currentHydro float32) (altered bool, destroyed bool) {
+	if toDate == (time.Time{}) {
+		debug.PrintStack()
+		log.Fatal("Plant: Target date is Nil")
+	}
+
+	if toDate == (time.Time{}) {
+		debug.PrintStack()
+		log.Fatal("Plant: last visit date is Nil")
+	}
+
 	altered = false
 	destroyed = false
 	modifier := plant.TargetHydro.WhereInRange(currentHydro)

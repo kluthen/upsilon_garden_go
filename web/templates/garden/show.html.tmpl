@@ -20,7 +20,7 @@
         <li class="arc">
             <ul class="parcel">
                 <li class="parcel_item">{{.Position}}</li>
-                <li class="parcel_item">{{ if ne .PlantID 0 }}
+                <li class="parcel_item">{{ if ne .PlantID -1 }}
                     <!-- 
                         <a href="/gardens/{{$.ID}}/plants/{{.PlantID}}">To Plant</a>
                     -->
@@ -32,7 +32,7 @@
                 <li class="parcel_item">{{.CurrentHydroLevel}}</li>
                 <li class="parcel_item">{{ if .HasNextHydroEndDate }}{{.NextHydroEnd}}{{end}}</li>
                 <li class="parcel_item hydro_status" data-parcel-id="{{.ID}}"></li>
-                <li class="actions">{{ if eq .PlantID 0 }}<a class="action action_plant action_add_plant" href="#" data-garden-id="{{$.ID}}" data-parcel-id="{{.ID}}">Add Plant</a>
+                <li class="actions">{{ if eq .PlantID -1 }}<a class="action action_plant action_add_plant" href="#" data-garden-id="{{$.ID}}" data-parcel-id="{{.ID}}">Add Plant</a>
                     {{- else}}
                     <a class="action action_dangerous action_drop_plant" href="#" data-garden-id="{{$.ID}}" data-plant-id="{{.PlantID}}">Drop Plant</a>
                     {{- end}}

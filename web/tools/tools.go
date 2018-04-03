@@ -48,9 +48,9 @@ func GenerateAPIError(w http.ResponseWriter, message string) {
 func GenerateAPIOkAndSend(w http.ResponseWriter) {
 	var repm = make(map[string]string)
 	repm["status"] = "ok"
-	json.NewEncoder(w).Encode(repm)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(repm)
 }
 
 // GenerateAPIOk generate a simple JSON reply with status: ok.

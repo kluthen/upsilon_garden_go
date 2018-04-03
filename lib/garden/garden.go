@@ -183,7 +183,7 @@ func (garden *Garden) DropPlant(pid int) {
 
 	for idx := range garden.Parcels {
 		if garden.Parcels[idx].PlantID == pid {
-			garden.Parcels[idx].PlantID = 0
+			garden.Parcels[idx].PlantID = -1
 			break
 		}
 	}
