@@ -231,7 +231,8 @@ func (garden *Garden) PlantByID(ID int) *Plant {
 func (garden *Garden) RefreshGarden() bool {
 	altered := false
 	// ATM only ensure that watering is updated.
-	now := time.Now()
+	now := time.Now().UTC()
+	log.Printf("Garden: computing update between %v and now %v", garden.LastUpdate, now)
 	for idx := range garden.Parcels {
 		parcel := garden.Parcels[idx]
 		plant := garden.PlantByID(parcel.PlantID)

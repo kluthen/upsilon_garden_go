@@ -1,6 +1,8 @@
 package garden
 
 import (
+	"fmt"
+	"log"
 	"time"
 	"upsilon_garden_go/config"
 )
@@ -31,12 +33,26 @@ func NewPlant() Plant {
 	plant.TargetHydro.MaxSuper = 0.65
 	plant.TargetHydro.MinSuper = 0.45
 	dur, _ := time.ParseDuration("3h")
-	plant.NextUpdate = time.Now().Add(dur)
+	plant.NextUpdate = time.Now().UTC().Add(dur)
 	plant.SpPerLevel = 5
 	plant.SpMax = 50
 	plant.SpCurrent = 25
 
 	return plant
+}
+
+func (plant *Plant) String() string {
+	if plant == nil {
+		return "Nil Plant"
+	}
+	return fmt.Sprintf("Plant {"+
+		"ID: %d"+
+		", Name: %s"+
+		", Level: %d"+
+		", PlantType: %s"+
+		", SP: %d"+
+		", Max SP: %d",
+		plant.ID, plant.Name, plant.Level, plant.PlantType, plant.SpCurrent, plant.SpMax)
 }
 
 // checkAndUpdate check alteration to the plant (sp, level up,etc) update stats accordingly and tell if plant has been altered.
@@ -45,15 +61,20 @@ func (plant *Plant) checkAndUpdate(lastVisit time.Time, toDate time.Time, curren
 	altered = false
 	destroyed = false
 	modifier := plant.TargetHydro.WhereInRange(currentHydro)
+	log.Printf("Plant: About to update: Plant NextUpdate: %v, Last Visit: %v, Target Date %v", plant.NextUpdate, lastVisit, toDate)
 	// there was at least a Level up inbetween ...
 	if toDate.Sub(plant.NextUpdate).Seconds() > 0 {
-		timeSpent := int(plant.NextUpdate.Sub(lastVisit).Seconds()) / config.PLANT_TIME_TIC
+		timeSpent := int(toDate.Sub(plant.NextUpdate).Seconds()) / config.PLANT_TIME_TIC
+		log.Printf("Plant: %d Tic to apply to plant %d", timeSpent, plant.ID)
 		if timeSpent > 0 {
 			altered = true
 			plant.SpCurrent += modifier * timeSpent
 			if plant.SpCurrent <= 0 {
 				destroyed = true
 				return
+			}
+			if plant.SpCurrent > plant.SpMax {
+				plant.SpCurrent = plant.SpMax
 			}
 
 			lastUpdate := plant.NextUpdate
@@ -66,6 +87,7 @@ func (plant *Plant) checkAndUpdate(lastVisit time.Time, toDate time.Time, curren
 	}
 
 	timeSpent := int(toDate.Sub(lastVisit).Seconds()) / config.PLANT_TIME_TIC
+	log.Printf("Plant: %d Tic to apply to plant %d", timeSpent, plant.ID)
 
 	if timeSpent > 0 {
 		altered = true
@@ -73,6 +95,9 @@ func (plant *Plant) checkAndUpdate(lastVisit time.Time, toDate time.Time, curren
 		if plant.SpCurrent <= 0 {
 			destroyed = true
 			return
+		}
+		if plant.SpCurrent > plant.SpMax {
+			plant.SpCurrent = plant.SpMax
 		}
 	}
 

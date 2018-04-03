@@ -121,8 +121,9 @@ func gardenMw(next http.Handler) http.Handler {
 			gard := g.(*garden.Garden)
 			handler := db.New()
 			defer handler.Close()
-			gard.LastUpdate = time.Now()
+			gard.LastUpdate = time.Now().UTC()
 			gard.Repsert(handler)
+			log.Printf("Web: Updated garden %d last visite date to %v", gard.ID, gard.LastUpdate)
 		}
 	})
 }

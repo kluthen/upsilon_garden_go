@@ -2,6 +2,7 @@ package garden
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -111,18 +112,23 @@ func (parcel *Parcel) refreshParcel(now time.Time, lastVisit time.Time, plant *P
 		return
 	}
 
-	if !parcel.HasNextHydroEndDate() {
-		return
-	}
-
-	if now.Sub(parcel.NextHydroEnd).Seconds() < 0 {
-		altered, plantDestroyed = plant.checkAndUpdate(lastVisit, now, parcel.CurrentHydroLevel)
-		return
+	if parcel.HasNextHydroEndDate() {
+		if now.Sub(parcel.NextHydroEnd).Seconds() < 0 {
+			altered, plantDestroyed = plant.checkAndUpdate(lastVisit, now, parcel.CurrentHydroLevel)
+			if altered {
+				log.Printf("Parcel: Plant Altered: %s", plant.String())
+			}
+			return
+		}
 	}
 
 	altered = true
 	lastNow := parcel.NextHydroEnd
-	_, plantDestroyed = plant.checkAndUpdate(lastVisit, parcel.NextHydroEnd, parcel.CurrentHydroLevel)
+	palter, plantDestroyed := plant.checkAndUpdate(lastVisit, parcel.NextHydroEnd, parcel.CurrentHydroLevel)
+
+	if palter {
+		log.Printf("Parcel: Plant Altered: %s", plant.String())
+	}
 	if plantDestroyed {
 		parcel.checkAndRecomputeHydro()
 		return
