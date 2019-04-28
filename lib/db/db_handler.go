@@ -7,7 +7,8 @@ import (
 
 	"upsilon_garden_go/config"
 
-	"github.com/lib/pq" // needed for postgres driver
+	// needed for postgres driver
+	"github.com/lib/pq"
 )
 
 // Handler Contains DB related informations
@@ -19,8 +20,8 @@ type Handler struct {
 // New Create a new handler for database, ensure database is created
 func New() *Handler {
 	handler := new(Handler)
-	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s",
-		config.DB_USER, config.DB_PASSWORD, config.DB_NAME, config.DB_HOST)
+	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s port=%s",
+		config.DB_USER, config.DB_PASSWORD, config.DB_NAME, config.DB_HOST, config.DB_PORT)
 
 	db, _ := sql.Open("postgres", dbinfo)
 
